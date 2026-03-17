@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Models\Postcode;
 
-class PostcodeCoodinatesService
+class PostcodeCoordinatesService
 {
-    public function getCoodinates(string $postcode): array
+    public function getCoordinates(string $postcode): array
     {
         $postcode = Postcode::where('postcode', $postcode)->first();
         return [

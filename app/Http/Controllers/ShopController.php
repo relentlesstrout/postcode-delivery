@@ -18,12 +18,12 @@ class ShopController extends Controller
         $shops = Shop::all()
             ->sortBy('is_open, desc');
 
-        return view('shop.index', compact('shops'));
+        return view('index', compact('shops'));
     }
 
     public function create(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        return view('shop.create');
+        return view('create');
     }
 
     public function store(Request $request): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
@@ -37,7 +37,7 @@ class ShopController extends Controller
             'max_delivery_distance' => 'required|numeric',
         ]);
 
-        return redirect('/shops');
+        return redirect('/');
     }
 
 
@@ -49,6 +49,6 @@ class ShopController extends Controller
 
         $shops = $this->canDeliverService->getCanDeliver($validated['postcode']);
 
-        return view('shops.index', compact('shops'));
+        return view('index', compact('shops'));
     }
 }
