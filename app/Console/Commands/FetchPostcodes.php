@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 use ZipArchive;
+use function Laravel\Prompts\progress;
 
 class FetchPostcodes extends Command
 {
@@ -39,8 +40,8 @@ class FetchPostcodes extends Command
     {
         $this->info('Fetching postcodes...');
 
-        $storageDisk    = 'public';
-        $storageDir     = 'postcodes';
+        $storageDisk = 'public';
+        $storageDir = 'postcodes';
         $zipStoragePath = "{$storageDir}/ukpostcodes.zip";
         $csvStoragePath = "{$storageDir}/ukpostcodes.csv";
 
@@ -64,32 +65,49 @@ class FetchPostcodes extends Command
         $zip = new ZipArchive();
 
         if ($zip->open($zipAbsPath) === true) {
-        $zip->extractTo(Storage::disk($storageDisk)->path($storageDir));
-        $zip->close();
+            $zip->extractTo(Storage::disk($storageDisk)->path($storageDir));
+            $zip->close();
         } else {
             $this->error('Failed to open zip file.');
             return 1;
         }
 
-        $this->info('Opening csv file...');
-
         $csv = fopen($csvAbsPath, "r");
-
-        $this->info('Inserting postcodes into database...');
 
         $header = fgetcsv($csv); //Skip the headers
 
+        $line_count = 0;
+
+        $this->info('Inserting postcodes into database...');
+
         $chunk = [];
 
+//        $inserts = progress(
+//            label: 'Inserting postcodes into database...',
+//            steps: $line_count / 500,
+//            callback: function () use ($csv, $chunk) {
+//                $this->insertPostcodes($csv, $chunk);
+//            }
+//        );
+
+        $this->insertPostcodes($csv, $chunk);;
+
+        fclose($csv);
+
+        Storage::disk($storageDisk)->deleteDirectory($storageDir);
+
+        $this->info("Postcodes fetched successfully.  postcodes inserted. ");
+        return 0;
+    }
+
+    private function insertPostcodes($csv, $chunk) {
         while (($row = fgetcsv($csv)) !== false) {
             [$id, $postcode, $latitude, $longitude] = $row;
-
             if ($latitude === '' || $longitude === '') {
                 continue;
             }
-
             $chunk[] = [
-                'postcode' => $postcode,
+                'postcode' => preg_replace( '/\W/', '', $postcode), //Remove all non-alphanumeric characters (e.g. '),
                 'latitude' => $latitude,
                 'longitude' => $longitude,
                 'created_at' => now(),
@@ -101,16 +119,8 @@ class FetchPostcodes extends Command
                 $chunk = [];
             }
         }
-
         if (! empty($chunk)) {
             DB::table('postcodes')->insertOrIgnore($chunk);
         }
-
-        fclose($csv);
-
-        Storage::disk($storageDisk)->deleteDirectory($storageDir);
-
-        $this->info('Postcodes fetched successfully.');
-        return 0;
     }
 }

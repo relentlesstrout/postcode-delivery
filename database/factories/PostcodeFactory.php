@@ -18,7 +18,9 @@ class PostcodeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'postcode' => fake()->postcode(),
+            'latitude' => fake()->latitude(),
+            'longitude' => fake()->longitude(),
         ];
     }
 }
