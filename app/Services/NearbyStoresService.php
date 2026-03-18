@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Shop;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 
 class NearbyStoresService
@@ -12,7 +13,7 @@ class NearbyStoresService
         private PostcodeCoordinatesService $postcodeCoordinatesService,
     ) {}
 
-    public function getNearbyStores(string $postcode, float $radius_km): Collection
+    public function getNearbyStores(string $postcode, float $radius_km): \Illuminate\Support\Collection
     {
         $userCoordinates = $this->postcodeCoordinatesService->getCoordinates($postcode);
         $userLatitude = $userCoordinates['latitude'];
@@ -20,20 +21,23 @@ class NearbyStoresService
 
         $degrees = $radius_km / 111;
 
-        return Shop::query()
+        $subquery = Shop::query()
             ->whereBetween('latitude', [$userLatitude - $degrees, $userLatitude + $degrees])
             ->whereBetween('longitude', [$userLongitude - $degrees, $userLongitude + $degrees])
             ->selectRaw("
-           *,
-            (6371 * acos(
-                cos(radians(?))
-                * cos(radians(latitude))
-                * cos(radians(longitude) - radians(?))
-                + sin(radians(?))
-                * sin(radians(latitude))
-            )) AS distance
-        ", [$userLatitude, $userLongitude, $userLatitude])
-            ->having('distance', '<=', $radius_km)
+        *,
+        (6371 * acos(
+            cos(radians(?))
+            * cos(radians(latitude))
+            * cos(radians(longitude) - radians(?))
+            + sin(radians(?))
+            * sin(radians(latitude))
+        )) AS distance
+    ", [$userLatitude, $userLongitude, $userLatitude]);
+
+        return DB::table(DB::raw("({$subquery->toSql()}) as sub"))
+            ->mergeBindings($subquery->getQuery())
+            ->where('distance', '<=', DB::raw('max_delivery_distance'))
             ->orderBy('distance')
             ->get();
     }

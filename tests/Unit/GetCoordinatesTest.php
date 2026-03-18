@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Models\Postcode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Services\PostcodeCoordinatesService;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class GetCoordinatesTest extends TestCase
 {
@@ -17,7 +17,7 @@ class GetCoordinatesTest extends TestCase
     {
         $userPostcode = 'SW1A 2AA';
 
-        $seededProcessedPostcode = Postcode::factory()->create([
+        Postcode::factory()->create([
             'postcode' => 'SW1A 2AA',
             'latitude' => 51.507351,
             'longitude' => -0.127758,
