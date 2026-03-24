@@ -44,13 +44,13 @@ cp .env.example .env
 ```bash
 php artisan key:generate
 ```
-7. Run the postcode download command
+7. Run the Database migration
 ```bash
 php artisan app:fetch-postcodes
 ```
-8. Run the database migrations
+8. Run the postcode import command
 ```bash
-php artisan migrate
+php artisan app:fetch-postcodes
 ```
 9. Seed the database
 ```bash
