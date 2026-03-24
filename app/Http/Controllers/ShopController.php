@@ -31,7 +31,7 @@ class ShopController extends Controller
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'is_open' => 'required|boolean',
-            'type' => 'required|in:takeaway, shop, restaurant',
+            'type' => 'required|in:takeaway,shop,restaurant',
             'max_delivery_distance' => 'required|numeric',
         ]);
 

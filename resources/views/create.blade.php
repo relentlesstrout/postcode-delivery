@@ -132,7 +132,8 @@
 
                                 <div class="border-t border-orange-100"></div>
 
-                                <div class="flex justify-end">
+                                <div class="flex justify-between items-center">
+                                    <a href="{{route('shop.index')}}" class="text-sm text-orange-500 hover:underline font-semibold">Back to shops</a>
                                     <button
                                         type="submit"
                                         class="bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
@@ -140,10 +141,8 @@
                                         Add Store
                                     </button>
                                 </div>
-
                             </form>
                         </div>
-
                     </div>
                 </div>
             </main>
