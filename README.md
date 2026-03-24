@@ -56,9 +56,9 @@ php artisan app:fetch-postcodes
 ```bash
 php artisan db:seed
 ```
-10. Start the npm server
+10. Build front end
 ```bash
-npm run dev
+npm run build
 ```
 11. Start the server
 ```bash
