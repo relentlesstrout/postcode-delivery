@@ -15,10 +15,8 @@ class ShopController extends Controller
 
     public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $shops = Shop::all()
-            ->sortBy('is_open, desc');
-
-        return view('index', compact('shops'));
+        $stores = Shop::all();
+        return view('index', compact('stores'));
     }
 
     public function create(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
@@ -37,6 +35,14 @@ class ShopController extends Controller
             'max_delivery_distance' => 'required|numeric',
         ]);
 
+        Shop::create([
+            'name' => $validated['name'],
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'is_open' => $validated['is_open'],
+            'type' => $validated['type'],
+            'max_delivery_distance' => $validated['max_delivery_distance'],
+    ]);
         return redirect('/');
     }
 
@@ -47,8 +53,11 @@ class ShopController extends Controller
             'postcode' => ['required', 'string', 'regex:/^[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}$/i'],
         ]);
 
-        $shops = $this->canDeliverService->getCanDeliver($validated['postcode']);
+        //Remove spaces from postcode
+        $validated['postcode'] = str_replace(' ', '', $validated['postcode']);
 
-        return view('index', compact('shops'));
+        $stores = $this->canDeliverService->getCanDeliver($validated['postcode']);
+
+        return view('index', compact('stores'));
     }
 }

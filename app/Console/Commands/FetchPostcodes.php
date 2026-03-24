@@ -96,7 +96,7 @@ class FetchPostcodes extends Command
 
         Storage::disk($storageDisk)->deleteDirectory($storageDir);
 
-        $this->info("Postcodes fetched successfully.  postcodes inserted. ");
+        $this->info("Postcodes fetched successfully. Postcodes inserted. ");
         return 0;
     }
 
