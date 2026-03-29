@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ShopType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreShopRequest extends FormRequest
 {
@@ -27,7 +29,7 @@ class StoreShopRequest extends FormRequest
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'is_open' => 'required|boolean',
-            'type' => 'required|in:takeaway,shop,restaurant',
+            'type' => ['required', Rule::enum(ShopType::class)],
             'max_delivery_distance' => 'required|numeric',
         ];
     }
