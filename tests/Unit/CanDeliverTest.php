@@ -39,16 +39,19 @@ class CanDeliverTest extends TestCase
 
         $canDeliverAction = new CanDeliverAction($postcodeCoordinatesAction);
 
-        $canDeliverShop = $canDeliverAction->execute($userPostcode);
+        $shop = $canDeliverAction->execute($userPostcode);
 
-        $this->assertTrue($canDeliverShop->contains(function ($shop) {
-            return $shop->name === 'Test Shop'
-                && $shop->latitude == 57.14414
-                && $shop->longitude == -2.114871
-                && $shop->is_open == true
-                && $shop->type === 'takeaway'
-                && $shop->max_delivery_distance == 10;
-        }));
+        $this->assertCount(1, $shop);
+
+        $shop = $shop->first();
+
+        /** @var Shop $shop */
+        $this->assertSame('Test Shop', $shop->name);
+        $this->assertSame(57.14414, $shop->latitude);
+        $this->assertSame(-2.114871, $shop->longitude);
+        $this->assertTrue((bool)$shop->is_open);
+        $this->assertSame('takeaway', $shop->type);
+        $this->assertSame(10.0, $shop->max_delivery_distance);
     }
 
     public function test_a_postcode_outside_max_deliverable_distance_cannot_be_delivered(): void
@@ -76,13 +79,6 @@ class CanDeliverTest extends TestCase
 
         $canDeliverShop = $canDeliverAction->execute($userPostcode);
 
-        $this->assertFalse($canDeliverShop->contains(function ($shop) {
-            return $shop->name === 'Test Shop'
-                && $shop->latitude == 57.14414
-                && $shop->longitude == -2.114871
-                && $shop->is_open == true
-                && $shop->type === 'takeaway'
-                && $shop->max_delivery_distance == 10;
-        }));
+        $this->assertCount(0, $canDeliverShop);
     }
 }

@@ -27,16 +27,7 @@ class GetCoordinatesTest extends TestCase
         $postcodeCoordinatesAction = new PostcodeCoordinatesAction;
         $coordinates = $postcodeCoordinatesAction->execute($userPostcode);
 
-        $this->assertEquals(
-            [
-                'latitude' => 51.507351,
-                'longitude' => -0.127758,
-            ],
-            [
-                'latitude' => $coordinates->latitude,
-                'longitude' => $coordinates->longitude,
-            ]
-        );
-
+        $this->assertSame('51.507351', $coordinates->latitude);
+        $this->assertSame('-0.127758', $coordinates->longitude);
     }
 }
