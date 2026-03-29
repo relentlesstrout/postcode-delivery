@@ -2,14 +2,15 @@
 
 namespace Tests\Unit;
 
+use App\Actions\PostcodeCoordinatesAction;
 use App\Models\Postcode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Actions\PostcodeCoordinatesAction;
 use Tests\TestCase;
 
 class GetCoordinatesTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic unit test example.
      */
@@ -23,7 +24,7 @@ class GetCoordinatesTest extends TestCase
             'longitude' => -0.127758,
         ]);
 
-        $postcodeCoordinatesAction = new PostcodeCoordinatesAction();
+        $postcodeCoordinatesAction = new PostcodeCoordinatesAction;
         $coordinates = $postcodeCoordinatesAction->execute($userPostcode);
 
         $this->assertEquals(

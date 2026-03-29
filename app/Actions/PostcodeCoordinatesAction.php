@@ -10,6 +10,7 @@ class PostcodeCoordinatesAction
     public function execute(string $postcode): Coordinates
     {
         $postcode = Postcode::where('postcode', $postcode)->first();
+
         return new Coordinates(
             latitude: $postcode->latitude,
             longitude: $postcode->longitude

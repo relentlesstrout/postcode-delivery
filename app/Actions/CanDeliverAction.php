@@ -4,13 +4,13 @@ namespace App\Actions;
 
 use App\Models\Shop;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Collection;
 
 class CanDeliverAction
 {
     public function __construct(
         private PostcodeCoordinatesAction $postcodeCoordinatesAction,
     ) {}
+
     private const int KM_PER_DEGREE = 111;
 
     public function execute(string $postcode): \Illuminate\Support\Collection
@@ -24,7 +24,7 @@ class CanDeliverAction
         $subquery = Shop::query()
             ->whereBetween('latitude', [$userLatitude - $degrees, $userLatitude + $degrees])
             ->whereBetween('longitude', [$userLongitude - $degrees, $userLongitude + $degrees])
-            ->selectRaw("
+            ->selectRaw('
         *,
         (6371 * acos(
             cos(radians(?))
@@ -33,7 +33,7 @@ class CanDeliverAction
             + sin(radians(?))
             * sin(radians(latitude))
         )) AS distance
-    ", [$userLatitude, $userLongitude, $userLatitude]);
+    ', [$userLatitude, $userLongitude, $userLatitude]);
 
         return DB::table(DB::raw("({$subquery->toSql()}) as sub"))
             ->mergeBindings($subquery->getQuery())

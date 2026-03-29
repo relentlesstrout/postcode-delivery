@@ -7,9 +7,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Console\Command\Command as CommandAlias;
 use ZipArchive;
-use function Laravel\Prompts\progress;
 
 class FetchPostcodes extends Command
 {
@@ -30,7 +28,6 @@ class FetchPostcodes extends Command
     /**
      * Execute the console command.
      */
-
     private const string ZIP_URL = 'https://data.freemaptools.com/download/full-uk-postcodes/ukpostcodes.zip';
 
     /**
@@ -50,11 +47,12 @@ class FetchPostcodes extends Command
         $zipAbsPath = Storage::disk($storageDisk)->path($zipStoragePath);
         $csvAbsPath = Storage::disk($storageDisk)->path($csvStoragePath);
 
-        $response = HTTP::sink($zipAbsPath)
+        $response = Http::sink($zipAbsPath)
             ->get(self::ZIP_URL);
 
         if (! $response->successful()) {
-            $this->error('Postcodes fetch failed. HTTP' . $response->status());
+            $this->error('Postcodes fetch failed. HTTP'.$response->status());
+
             return 1;
         }
 
@@ -62,19 +60,20 @@ class FetchPostcodes extends Command
 
         $this->info('Opening Zip file...');
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
 
         if ($zip->open($zipAbsPath) === true) {
             $zip->extractTo(Storage::disk($storageDisk)->path($storageDir));
             $zip->close();
         } else {
             $this->error('Failed to open zip file.');
+
             return 1;
         }
 
-        $csv = fopen($csvAbsPath, "r");
+        $csv = fopen($csvAbsPath, 'r');
 
-        fgetcsv($csv); //Skip the headers
+        fgetcsv($csv); // Skip the headers
 
         $lineCount = $this->countLines($csv);
 
@@ -84,7 +83,7 @@ class FetchPostcodes extends Command
         $progressBar->start();
 
         rewind($csv);
-        fgetcsv($csv); //Skip the headers
+        fgetcsv($csv); // Skip the headers
 
         $this->insertPostcodes($csv, $progressBar);
 
@@ -95,6 +94,7 @@ class FetchPostcodes extends Command
         $progressBar->finish();
 
         $this->info(" Postcodes fetched successfully. '$lineCount' postcodes inserted.");
+
         return 0;
     }
 
@@ -109,7 +109,7 @@ class FetchPostcodes extends Command
                 continue;
             }
             $chunk[] = [
-                'postcode' => preg_replace( '/\W/', '', $postcode), //Remove all non-alphanumeric characters (e.g. '),
+                'postcode' => preg_replace('/\W/', '', $postcode), // Remove all non-alphanumeric characters (e.g. '),
                 'latitude' => $latitude,
                 'longitude' => $longitude,
                 'created_at' => now(),
@@ -131,11 +131,12 @@ class FetchPostcodes extends Command
     public function countLines($csv): int
     {
         $lineCount = 0;
-        define("CHUNK_SIZE", 8192);
+        define('CHUNK_SIZE', 8192);
 
-        while (!feof($csv)) {
+        while (! feof($csv)) {
             $lineCount += substr_count(fread($csv, CHUNK_SIZE), "\n");
         }
+
         return $lineCount;
     }
 }

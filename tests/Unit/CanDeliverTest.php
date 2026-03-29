@@ -2,17 +2,17 @@
 
 namespace Tests\Unit;
 
-use App\DTOs\Coordinates;
-use App\Models\Shop;
 use App\Actions\CanDeliverAction;
 use App\Actions\PostcodeCoordinatesAction;
+use App\DTOs\Coordinates;
+use App\Models\Shop;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-
 
 class CanDeliverTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic unit test example.
      */

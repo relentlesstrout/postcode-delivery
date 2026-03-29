@@ -3,9 +3,7 @@
 namespace App\Actions;
 
 use App\Models\Shop;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-
 
 class NearbyStoresAction
 {
@@ -26,7 +24,7 @@ class NearbyStoresAction
         $subquery = Shop::query()
             ->whereBetween('latitude', [$userLatitude - $degrees, $userLatitude + $degrees])
             ->whereBetween('longitude', [$userLongitude - $degrees, $userLongitude + $degrees])
-            ->selectRaw("
+            ->selectRaw('
         *,
         (6371 * acos(
             cos(radians(?))
@@ -35,7 +33,7 @@ class NearbyStoresAction
             + sin(radians(?))
             * sin(radians(latitude))
         )) AS distance
-    ", [$userLatitude, $userLongitude, $userLatitude]);
+    ', [$userLatitude, $userLongitude, $userLatitude]);
 
         return DB::table(DB::raw("({$subquery->toSql()}) as sub"))
             ->mergeBindings($subquery->getQuery())

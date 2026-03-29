@@ -8,9 +8,9 @@
             <x-button/>
         </div>
         <div class="mb-6">
-            @error('postcode')
-            <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+            <x-form-error field="postcode">
+
+            </x-form-error>
         </div>
         <x-table :stores="$stores"/>
     </div>

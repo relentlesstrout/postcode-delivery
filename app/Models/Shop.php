@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\ShopFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model
 {
-    /** @use HasFactory<\Database\Factories\ShopFactory> */
+    /** @use HasFactory<ShopFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -20,6 +21,6 @@ class Shop extends Model
     ];
 
     protected $casts = [
-      'is_open' => 'boolean',
+        'is_open' => 'boolean',
     ];
 }

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CanDeliverAction;
 use App\Http\Requests\CanDeliverRequest;
 use App\Http\Requests\StoreShopRequest;
 use App\Models\Shop;
-use App\Actions\CanDeliverAction;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 class ShopController extends Controller
 {
@@ -14,14 +15,14 @@ class ShopController extends Controller
         private CanDeliverAction $canDeliverAction
     ) {}
 
-
-    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function index(): Factory|View
     {
         $stores = Shop::all();
+
         return view('index', compact('stores'));
     }
 
-    public function create(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function create(): Factory|View
     {
         return view('create');
     }
@@ -32,7 +33,6 @@ class ShopController extends Controller
 
         return redirect('/');
     }
-
 
     public function canDeliver(CanDeliverRequest $request)
     {

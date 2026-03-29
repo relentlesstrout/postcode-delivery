@@ -2,24 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\CanDeliverAction;
+use App\Actions\NearbyStoresAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CanDeliverRequest;
 use App\Http\Requests\NearbyRequest;
 use App\Http\Resources\ShopResource;
-use App\Models\Shop;
-use App\Actions\NearbyStoresAction;
-use App\Actions\CanDeliverAction;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Collection;
-
 
 class ShopController extends Controller
 {
     public function __construct(
         private NearbyStoresAction $nearbyStoresAction,
-        private CanDeliverAction   $canDeliverAction
+        private CanDeliverAction $canDeliverAction
     ) {}
 
     public function nearby(NearbyRequest $request): ResourceCollection

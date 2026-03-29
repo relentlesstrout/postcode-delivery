@@ -2,13 +2,12 @@
 
 namespace Tests\Unit;
 
+use App\Actions\NearbyStoresAction;
+use App\Actions\PostcodeCoordinatesAction;
 use App\DTOs\Coordinates;
 use App\Models\Shop;
-use App\Actions\PostcodeCoordinatesAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Actions\NearbyStoresAction;
-
 
 class NearbyStoresActionTest extends TestCase
 {
@@ -16,6 +15,7 @@ class NearbyStoresActionTest extends TestCase
      * A basic feature test example.
      */
     use RefreshDatabase;
+
     public function test_nearby_stores_service_returns_nearby_stores(): void
     {
         Shop::factory()->create([
@@ -86,5 +86,4 @@ class NearbyStoresActionTest extends TestCase
         }));
 
     }
-
 }
