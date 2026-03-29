@@ -1,23 +1,25 @@
 <?php
 
-namespace App\Services;
+namespace App\Actions;
 
 use App\Models\Shop;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
-class CanDeliverService
+
+class NearbyStoresAction
 {
     public function __construct(
-        private PostcodeCoordinatesService $postcodeCoordinatesService,
+        private PostcodeCoordinatesAction $postcodeCoordinatesAction,
     ) {}
-    public function getCanDeliver(string $postcode): \Illuminate\Support\Collection
+
+    public function execute(string $postcode, float $radius_km): \Illuminate\Support\Collection
     {
-        $userCoordinates = $this->postcodeCoordinatesService->getCoordinates($postcode);
+        $userCoordinates = $this->postcodeCoordinatesAction->execute($postcode);
         $userLatitude = $userCoordinates['latitude'];
         $userLongitude = $userCoordinates['longitude'];
 
-        $degrees = 20 / 111;
+        $degrees = $radius_km / 111;
 
         $subquery = Shop::query()
             ->whereBetween('latitude', [$userLatitude - $degrees, $userLatitude + $degrees])
@@ -36,7 +38,6 @@ class CanDeliverService
         return DB::table(DB::raw("({$subquery->toSql()}) as sub"))
             ->mergeBindings($subquery->getQuery())
             ->where('distance', '<=', DB::raw('max_delivery_distance'))
-            ->where('is_open', true)
             ->orderBy('distance')
             ->get();
     }

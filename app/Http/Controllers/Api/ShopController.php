@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CanDeliverRequest;
 use App\Http\Requests\NearbyRequest;
 use App\Models\Shop;
-use App\Services\NearbyStoresService;
-use App\Services\CanDeliverService;
+use App\Actions\NearbyStoresAction;
+use App\Actions\CanDeliverAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,15 +15,15 @@ use Illuminate\Http\Request;
 class ShopController extends Controller
 {
     public function __construct(
-        private NearbyStoresService $nearbyStoresService,
-        private CanDeliverService $canDeliverService
+        private NearbyStoresAction $nearbyStoresAction,
+        private CanDeliverAction   $canDeliverAction
     ) {}
 
     public function nearby(Request $request): JsonResponse
     {
         $validated = $request->normalisePostcode($request);
 
-        $shops = $this->nearbyStoresService->getNearbyStores(
+        $shops = $this->nearbyStoresAction->execute(
             $validated['postcode'],
             $validated['radius_km'],
         );
@@ -35,7 +35,7 @@ class ShopController extends Controller
     {
         $validated = $request->normalisePostcode($request);
 
-        $shops = $this->canDeliverService->getCanDeliver($validated['postcode']);
+        $shops = $this->canDeliverAction->execute($validated['postcode']);
 
         return response()->json($shops);
     }

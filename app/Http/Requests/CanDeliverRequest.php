@@ -12,7 +12,7 @@ class CanDeliverRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -27,8 +27,8 @@ class CanDeliverRequest extends FormRequest
         ];
     }
 
-    public function normalisePostcode($request): array
+    public function normalisePostcode(): string
     {
-        return $request['postcode'] = str_replace(' ', '', $request['postcode']);
+        return strtoupper(str_replace(' ', '', $this->postcode));
     }
 }
