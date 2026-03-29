@@ -14,8 +14,8 @@ class CanDeliverAction
     public function execute(string $postcode): \Illuminate\Support\Collection
     {
         $userCoordinates = $this->postcodeCoordinatesAction->execute($postcode);
-        $userLatitude = $userCoordinates['latitude'];
-        $userLongitude = $userCoordinates['longitude'];
+        $userLatitude = $userCoordinates->latitude;
+        $userLongitude = $userCoordinates->longitude;
 
         $degrees = 20 / 111;
 
