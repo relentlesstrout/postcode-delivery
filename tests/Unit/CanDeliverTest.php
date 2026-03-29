@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\DTOs\Coordinates;
 use App\Models\Shop;
 use App\Actions\CanDeliverAction;
 use App\Actions\PostcodeCoordinatesAction;
@@ -31,10 +32,10 @@ class CanDeliverTest extends TestCase
         $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
         $postcodeCoordinatesAction
             ->method('execute')
-            ->willReturn([
-                'latitude' => 57.14414,
-                'longitude' => -2.114871,
-        ]);
+            ->willReturn(new Coordinates(
+                latitude: 57.14414,
+                longitude: -2.114871,
+            ));
 
         $canDeliverAction = new CanDeliverAction($postcodeCoordinatesAction);
 
@@ -66,10 +67,10 @@ class CanDeliverTest extends TestCase
         $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
         $postcodeCoordinatesAction
             ->method('execute')
-            ->willReturn([
-                'latitude' => 59.891572,
-                'longitude' => -1.313847,
-            ]);
+            ->willReturn(new Coordinates(
+                latitude: 59.89157,
+                longitude: -1.31385,
+            ));
 
         $canDeliverAction = new CanDeliverAction($postcodeCoordinatesAction);
 

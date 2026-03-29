@@ -32,8 +32,8 @@ class GetCoordinatesTest extends TestCase
                 'longitude' => -0.127758,
             ],
             [
-                'latitude' => $coordinates['latitude'],
-                'longitude' => $coordinates['longitude'],
+                'latitude' => $coordinates->latitude,
+                'longitude' => $coordinates->longitude,
             ]
         );
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\DTOs\Coordinates;
 use App\Models\Shop;
 use App\Actions\PostcodeCoordinatesAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,10 +33,10 @@ class NearbyStoresActionTest extends TestCase
         $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
         $postcodeCoordinatesAction
             ->method('execute')
-            ->willReturn([
-                'latitude' => 57.14414,
-                'longitude' => -2.114871,
-            ]);
+            ->willReturn(new Coordinates(
+                latitude: 57.14414,
+                longitude: -2.114871,
+            ));
 
         $nearbyStoresAction = new NearbyStoresAction($postcodeCoordinatesAction);
         $shops = $nearbyStoresAction->execute($userPostcode, $radiusKm);
@@ -67,10 +68,10 @@ class NearbyStoresActionTest extends TestCase
         $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
         $postcodeCoordinatesAction
             ->method('execute')
-            ->willReturn([
-                'latitude' => 59.891572,
-                'longitude' => -1.313847,
-            ]);
+            ->willReturn(new Coordinates(
+                latitude: 57.14414,
+                longitude: -1.313847
+            ));
 
         $nearbyStoresAction = new NearbyStoresAction($postcodeCoordinatesAction);
         $shops = $nearbyStoresAction->execute($userPostcode, $radiusKm);
