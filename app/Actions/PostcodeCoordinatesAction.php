@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Actions;
 
 use App\Models\Postcode;
 
-class PostcodeCoordinatesService
+class PostcodeCoordinatesAction
 {
-    public function getCoordinates(string $postcode): array
+    public function execute(string $postcode): array
     {
         $postcode = Postcode::where('postcode', $postcode)->first();
         return [

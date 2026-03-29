@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CanDeliverRequest;
+use App\Http\Requests\StoreShopRequest;
 use App\Models\Shop;
-use App\Services\CanDeliverService;
+use App\Actions\CanDeliverAction;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
     public function __construct(
-        private CanDeliverService $canDeliverService
+        private CanDeliverAction $canDeliverAction
     ) {}
 
 
@@ -25,7 +26,7 @@ class ShopController extends Controller
         return view('create');
     }
 
-    public function store(Request $request): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function store(StoreShopRequest $request)
     {
         Shop::create($request->validated());
 
@@ -35,9 +36,9 @@ class ShopController extends Controller
 
     public function canDeliver(CanDeliverRequest $request)
     {
-        $validated = $request->normalisePostcode($request);
+        $validated = $request->normalisePostcode();
 
-        $stores = $this->canDeliverService->getCanDeliver($validated['postcode']);
+        $stores = $this->canDeliverAction->execute($validated);
 
         return view('index', compact('stores'));
     }

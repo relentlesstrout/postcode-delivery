@@ -3,8 +3,8 @@
 namespace Tests\Unit;
 
 use App\Models\Shop;
-use App\Services\CanDeliverService;
-use App\Services\PostcodeCoordinatesService;
+use App\Actions\CanDeliverAction;
+use App\Actions\PostcodeCoordinatesAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -28,17 +28,17 @@ class CanDeliverTest extends TestCase
 
         $userPostcode = 'AB101XG';
 
-        $postcodeCoordinatesService = $this->createMock(PostcodeCoordinatesService::class);
-        $postcodeCoordinatesService
-            ->method('getCoordinates')
+        $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
+        $postcodeCoordinatesAction
+            ->method('execute')
             ->willReturn([
                 'latitude' => 57.14414,
                 'longitude' => -2.114871,
         ]);
 
-        $canDeliverService = new CanDeliverService($postcodeCoordinatesService);
+        $canDeliverAction = new CanDeliverAction($postcodeCoordinatesAction);
 
-        $canDeliverShop = $canDeliverService->getCanDeliver($userPostcode);
+        $canDeliverShop = $canDeliverAction->execute($userPostcode);
 
         $this->assertTrue($canDeliverShop->contains(function ($shop) {
             return $shop->name === 'Test Shop'
@@ -63,17 +63,17 @@ class CanDeliverTest extends TestCase
 
         $userPostcode = 'ZE39JY';
 
-        $postcodeCoordinatesService = $this->createMock(PostcodeCoordinatesService::class);
-        $postcodeCoordinatesService
-            ->method('getCoordinates')
+        $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
+        $postcodeCoordinatesAction
+            ->method('execute')
             ->willReturn([
                 'latitude' => 59.891572,
                 'longitude' => -1.313847,
             ]);
 
-        $canDeliverService = new CanDeliverService($postcodeCoordinatesService);
+        $canDeliverAction = new CanDeliverAction($postcodeCoordinatesAction);
 
-        $canDeliverShop = $canDeliverService->getCanDeliver($userPostcode);
+        $canDeliverShop = $canDeliverAction->execute($userPostcode);
 
         $this->assertFalse($canDeliverShop->contains(function ($shop) {
             return $shop->name === 'Test Shop'

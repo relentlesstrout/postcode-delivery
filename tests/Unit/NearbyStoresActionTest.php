@@ -3,13 +3,13 @@
 namespace Tests\Unit;
 
 use App\Models\Shop;
-use App\Services\PostcodeCoordinatesService;
+use App\Actions\PostcodeCoordinatesAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Services\NearbyStoresService;
+use App\Actions\NearbyStoresAction;
 
 
-class NearbyStoresServiceTest extends TestCase
+class NearbyStoresActionTest extends TestCase
 {
     /**
      * A basic feature test example.
@@ -29,16 +29,16 @@ class NearbyStoresServiceTest extends TestCase
         $userPostcode = 'AB101XG';
         $radiusKm = 2;
 
-        $postcodeCoordinatesService = $this->createMock(PostcodeCoordinatesService::class);
-        $postcodeCoordinatesService
-            ->method('getCoordinates')
+        $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
+        $postcodeCoordinatesAction
+            ->method('execute')
             ->willReturn([
                 'latitude' => 57.14414,
                 'longitude' => -2.114871,
             ]);
 
-        $nearbyStoresService = new NearbyStoresService($postcodeCoordinatesService);
-        $shops = $nearbyStoresService->getNearbyStores($userPostcode, $radiusKm);
+        $nearbyStoresAction = new NearbyStoresAction($postcodeCoordinatesAction);
+        $shops = $nearbyStoresAction->execute($userPostcode, $radiusKm);
 
         $this->assertTrue($shops->contains(function ($shop) {
             return $shop->name === 'Test Shop'
@@ -64,16 +64,16 @@ class NearbyStoresServiceTest extends TestCase
         $userPostcode = 'ZE39JY';
         $radiusKm = 2;
 
-        $postcodeCoordinatesService = $this->createMock(PostcodeCoordinatesService::class);
-        $postcodeCoordinatesService
-            ->method('getCoordinates')
+        $postcodeCoordinatesAction = $this->createMock(PostcodeCoordinatesAction::class);
+        $postcodeCoordinatesAction
+            ->method('execute')
             ->willReturn([
                 'latitude' => 59.891572,
                 'longitude' => -1.313847,
             ]);
 
-        $nearbyStoresService = new NearbyStoresService($postcodeCoordinatesService);
-        $shops = $nearbyStoresService->getNearbyStores($userPostcode, $radiusKm);
+        $nearbyStoresAction = new NearbyStoresAction($postcodeCoordinatesAction);
+        $shops = $nearbyStoresAction->execute($userPostcode, $radiusKm);
 
         $this->assertFalse($shops->contains(function ($shop) {
             return $shop->name === 'Test Shop'
