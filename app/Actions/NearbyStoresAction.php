@@ -13,13 +13,15 @@ class NearbyStoresAction
         private PostcodeCoordinatesAction $postcodeCoordinatesAction,
     ) {}
 
+    private const int KM_PER_DEGREE = 111;
+
     public function execute(string $postcode, float $radius_km): \Illuminate\Support\Collection
     {
         $userCoordinates = $this->postcodeCoordinatesAction->execute($postcode);
         $userLatitude = $userCoordinates->latitude;
         $userLongitude = $userCoordinates->longitude;
 
-        $degrees = $radius_km / 111;
+        $degrees = $radius_km / self::KM_PER_DEGREE;
 
         $subquery = Shop::query()
             ->whereBetween('latitude', [$userLatitude - $degrees, $userLatitude + $degrees])

@@ -11,13 +11,15 @@ class CanDeliverAction
     public function __construct(
         private PostcodeCoordinatesAction $postcodeCoordinatesAction,
     ) {}
+    private const int KM_PER_DEGREE = 111;
+
     public function execute(string $postcode): \Illuminate\Support\Collection
     {
         $userCoordinates = $this->postcodeCoordinatesAction->execute($postcode);
         $userLatitude = $userCoordinates->latitude;
         $userLongitude = $userCoordinates->longitude;
 
-        $degrees = 20 / 111;
+        $degrees = config('default_delivery_radius_km') / self::KM_PER_DEGREE;
 
         $subquery = Shop::query()
             ->whereBetween('latitude', [$userLatitude - $degrees, $userLatitude + $degrees])
