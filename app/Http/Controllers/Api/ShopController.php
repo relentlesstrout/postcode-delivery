@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CanDeliverRequest;
+use App\Http\Requests\NearbyRequest;
 use App\Models\Shop;
 use App\Services\NearbyStoresService;
 use App\Services\CanDeliverService;
@@ -19,25 +21,22 @@ class ShopController extends Controller
 
     public function nearby(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'postcode' => ['required', 'string', 'regex:/^[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}$/i'],
-            'radius_km' => 'sometimes|numeric|min:0|max:30',
-        ]);
+        $validated = $request->normalisePostcode($request);
 
         $shops = $this->nearbyStoresService->getNearbyStores(
             $validated['postcode'],
             $validated['radius_km'],
         );
+
         return response()->json($shops);
     }
 
-    public function canDeliver(Request $request): JsonResponse
+    public function canDeliver(NearbyRequest $request)
     {
-        $validated = $request->validate([
-            'postcode' => ['required', 'string', 'regex:/^[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}$/i'],
-        ]);
+        $validated = $request->normalisePostcode($request);
 
         $shops = $this->canDeliverService->getCanDeliver($validated['postcode']);
+
         return response()->json($shops);
     }
 }

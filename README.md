@@ -64,7 +64,12 @@ npm run build
 ```bash
 php artisan serve
 ```
-
 You should now be able to access the app at http://localhost:8000
+
+## Reflections 
+1. Using a Uk Postcode package would likely include further edge cases than the current regex validation 
+2. Using livewire or a javascript framework for table updates rather than having a page reload would provide a better UX
+3. Using SQLite was a poor choice of database. Lacks the ability to filter with a HAVING clause. MYSQL would be better and PostgreSQL would be best with it's native support for geospacial and geometric objects.
+
 
 

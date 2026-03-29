@@ -7,9 +7,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-zip": "*",
+        "brick/postcode": "^0.6.1",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "ext-zip": "*"
+        "tijsverkoyen/css-to-inline-styles": "^2.2.5"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",

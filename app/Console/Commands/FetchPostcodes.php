@@ -36,7 +36,7 @@ class FetchPostcodes extends Command
     /**
      * @throws ConnectionException
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('Fetching postcodes...');
 
@@ -74,33 +74,35 @@ class FetchPostcodes extends Command
 
         $csv = fopen($csvAbsPath, "r");
 
-        $header = fgetcsv($csv); //Skip the headers
+        fgetcsv($csv); //Skip the headers
 
-        $line_count = 0;
+        $lineCount = $this->countLines($csv);
 
         $this->info('Inserting postcodes into database...');
 
-        $chunk = [];
+        $progressBar = $this->output->createProgressBar($lineCount);
+        $progressBar->start();
 
-//        $inserts = progress(
-//            label: 'Inserting postcodes into database...',
-//            steps: $line_count / 500,
-//            callback: function () use ($csv, $chunk) {
-//                $this->insertPostcodes($csv, $chunk);
-//            }
-//        );
+        rewind($csv);
+        fgetcsv($csv); //Skip the headers
 
-        $this->insertPostcodes($csv, $chunk);;
+        $this->insertPostcodes($csv, $progressBar);
 
         fclose($csv);
 
         Storage::disk($storageDisk)->deleteDirectory($storageDir);
 
-        $this->info("Postcodes fetched successfully. Postcodes inserted. ");
+        $progressBar->finish();
+
+        $this->info(" Postcodes fetched successfully. '$lineCount' postcodes inserted.");
         return 0;
     }
 
-    private function insertPostcodes($csv, $chunk) {
+    private function insertPostcodes($csv, $progressBar): void
+    {
+        $chunk = [];
+        define(CHUNK_SIZE, 500);
+
         while (($row = fgetcsv($csv)) !== false) {
             [$id, $postcode, $latitude, $longitude] = $row;
             if ($latitude === '' || $longitude === '') {
@@ -114,13 +116,26 @@ class FetchPostcodes extends Command
                 'updated_at' => now(),
             ];
 
-            if (count($chunk) >= 500) {
+            if (count($chunk) >= CHUNK_SIZE) {
                 DB::table('postcodes')->insertOrIgnore($chunk);
                 $chunk = [];
+                $progressBar->advance(CHUNK_SIZE);
             }
         }
         if (! empty($chunk)) {
             DB::table('postcodes')->insertOrIgnore($chunk);
+            $progressBar->advance(count($chunk));
         }
+    }
+
+    public function countLines($csv): int
+    {
+        $lineCount = 0;
+        define("CHUNK_SIZE", 8192);
+
+        while (!feof($csv)) {
+            $lineCount += substr_count(fread($csv, CHUNK_SIZE), "\n");
+        }
+        return $lineCount;
     }
 }
