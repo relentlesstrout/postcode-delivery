@@ -78,13 +78,19 @@ php artisan app:fetch-postcodes
 php artisan db:seed
 ```
 
-10. Build front end
+10. Set default search radius for delivery
+
+```dotenv
+DEFAULT_DELIVERY_RADIUS_KM=20
+```
+
+11. Build front end
 
 ```bash
 npm run build
 ```
 
-11. Start the server
+12. Start the server
 
 ```bash
 php artisan serve

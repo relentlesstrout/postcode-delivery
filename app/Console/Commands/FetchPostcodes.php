@@ -30,6 +30,9 @@ class FetchPostcodes extends Command
      */
     private const string ZIP_URL = 'https://data.freemaptools.com/download/full-uk-postcodes/ukpostcodes.zip';
 
+    private const int CHUNK_SIZE = 500;
+    private const int CHUNK_SIZE_COUNT = 8192;
+
     /**
      * @throws ConnectionException
      */
@@ -85,7 +88,7 @@ class FetchPostcodes extends Command
         rewind($csv);
         fgetcsv($csv); // Skip the headers
 
-        $this->insertPostcodes($csv, $progressBar);
+        $postcodes_count = $this->insertPostcodes($csv, $progressBar);
 
         fclose($csv);
 
@@ -93,15 +96,14 @@ class FetchPostcodes extends Command
 
         $progressBar->finish();
 
-        $this->info(" Postcodes fetched successfully. '$lineCount' postcodes inserted.");
+        $this->info(" Postcodes fetched successfully. '$lineCount' postcodes processed. '$postcodes_count' postcodes inserted into database.");
 
         return 0;
     }
 
-    private function insertPostcodes($csv, $progressBar): void
+    private function insertPostcodes($csv, $progressBar): int
     {
-        $chunk = [];
-        define(CHUNK_SIZE, 500);
+        $postcode_count = 0;
 
         while (($row = fgetcsv($csv)) !== false) {
             [$id, $postcode, $latitude, $longitude] = $row;
@@ -116,25 +118,27 @@ class FetchPostcodes extends Command
                 'updated_at' => now(),
             ];
 
-            if (count($chunk) >= CHUNK_SIZE) {
+            if (count($chunk) >= self::CHUNK_SIZE) {
                 DB::table('postcodes')->insertOrIgnore($chunk);
+                $postcode_count += count($chunk);
                 $chunk = [];
-                $progressBar->advance(CHUNK_SIZE);
+                $progressBar->advance(self::CHUNK_SIZE);
             }
         }
         if (! empty($chunk)) {
             DB::table('postcodes')->insertOrIgnore($chunk);
+            $postcode_count += count($chunk);
             $progressBar->advance(count($chunk));
         }
+        return $postcode_count;
     }
 
     public function countLines($csv): int
     {
         $lineCount = 0;
-        define('CHUNK_SIZE', 8192);
 
         while (! feof($csv)) {
-            $lineCount += substr_count(fread($csv, CHUNK_SIZE), "\n");
+            $lineCount += substr_count(fread($csv, self::CHUNK_SIZE_COUNT), "\n");
         }
 
         return $lineCount;
