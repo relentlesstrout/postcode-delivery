@@ -63,7 +63,7 @@ php artisan key:generate
 7. Run the Database migration
 
 ```bash
-php artisan app:fetch-postcodes
+php artisan db:migrate
 ```
 
 8. Run the postcode import command
