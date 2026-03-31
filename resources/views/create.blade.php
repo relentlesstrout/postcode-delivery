@@ -5,9 +5,15 @@
     <div class="min-h-screen bg-gray-50 py-12 px-4">
         <div class="max-w-2xl mx-auto">
 
-            <div class="mb-8">
+            <div class="mb-8 relative">
                 <h2 class="text-4xl font-bold text-orange-900 tracking-tight">Add a new store</h2>
                 <p class="mt-1 text-sm text-orange-500">Fill in the details below to register a new store.</p>
+                <div class="absolute top-0 right-0">
+                    <x-link-button
+                        route="shop.index"
+                        label="Back to shops"
+                    />
+                </div>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-orange-100 p-8">

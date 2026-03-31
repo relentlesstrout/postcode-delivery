@@ -5,12 +5,15 @@
     <div class="mx-10 max-w-full px-6 py-12">
         <div class="flex justify-between items-center mb-8">
             <x-form/>
-            <x-button/>
+            <x-link-button
+            route="shop.create"
+            label="Add a Shop"
+            >Add Store
+            </x-link-button>
         </div>
         <div class="mb-6">
-            <x-form-error field="postcode">
+            <x-form-error field="postcode"/>
 
-            </x-form-error>
         </div>
         <x-table :stores="$stores"/>
     </div>
